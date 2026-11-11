@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWPF>true</UseWPF>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Jint" Version="4.17.0" />
+    <EmbeddedResource Include="..\LeaseImport.WPF\JScript\LeaseCalculator.js"
+                      LogicalName="LeaseImport.Core.Scripts.LeaseCalculator.js" />
+  </ItemGroup>
+
+</Project>

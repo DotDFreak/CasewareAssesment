@@ -1,0 +1,39 @@
+LeaseId,AssetClass,Description,Currency,Opening,Additions,Depreciation,Disposals
+L-2001,Property,Office Aarhus,DKK,1250000.50,0,125000.05,0
+L-2002,Vehicles,Fleet (12 cars),DKK,480000.00,60000.00,96000.00,0
+L-2003,Equipment,Printer,DKK,20000.00,0,5000.00,0
+L-2004,Property,Warehouse Odense,EUR,300000.00,0,30000.00,0
+L-2005,Property,"Office, West wing",DKK,1000.50,250.25,100.10,0
+L-2006,Equipment,"Printer ""Deluxe""",DKK,500,0,50,0
+L-2007,Property,"Office floor 1
+Storage floor 2",DKK,2500,100,250,0
+
+L-2008,Property,Birou București – Århus,DKK,100.01,0,10.01,0
+  L-2009  , Equipment , Trim surrounding whitespace , DKK , 100.00 , 0 , 10.00 , 0
+L-2010,Equipment,Zero balance,DKK,0,0,0,0
+L-2011,Equipment,Negative adjustment,DKK,-100.25,25.25,-10.00,0
+L-2012,Equipment,Explicit plus sign,DKK,+100.50,+20.00,10.00,0
+L-2013,Equipment,Fractional cents retained,DKK,1.005,0,0.005,0
+L-2001,Property,Exact duplicate ID,DKK,100,0,10,0
+l-2002,Vehicles,Case insensitive duplicate ID,DKK,100,0,10,0
+,Property,Missing lease ID,DKK,100,0,10,0
+BAD-01,,Missing asset class,DKK,100,0,10,0
+BAD-02,Property,,DKK,100,0,10,0
+BAD-03,Property,Missing currency,,100,0,10,0
+BAD-04,Property,Lowercase currency,dkk,100,0,10,0
+BAD-05,Property,Short currency,DK,100,0,10,0
+BAD-06,Property,Currency with digit,D1K,100,0,10,0
+BAD-07,Property,Missing opening,DKK,,0,10,0
+BAD-08,Property,Missing additions,DKK,100,,10,0
+BAD-09,Property,Missing depreciation,DKK,100,0,,0
+BAD-10,Property,Missing disposals,DKK,100,0,10,
+BAD-11,Property,Non numeric opening,DKK,abc,0,10,0
+BAD-12,Property,Comma decimal,DKK,"100,50",0,10,0
+BAD-13,Property,Thousands separator,DKK,"1,000.00",0,10,0
+BAD-14,Property,Scientific notation,DKK,1e3,0,10,0
+BAD-15,Property,Decimal overflow,DKK,79228162514264337593543950336,0,10,0
+BAD-16,Property,Too few fields,DKK,100,0,10
+BAD-17,Property,Too many fields,DKK,100,0,10,0,EXTRA
+BAD-18,Property,"Invalid closing quote"junk,DKK,100,0,10,0
+BAD-19,,"   ",usd,not-a-number,,bad,0
+L-2014,Equipment,Valid row after all errors,DKK,999.99,0,99.99,0

@@ -1,0 +1,194 @@
+<Window x:Class="LeaseImport.WPF.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:LeaseImport.WPF"
+        xmlns:models="clr-namespace:LeaseImport.Core.Models;assembly=LeaseImport.Core"
+        mc:Ignorable="d"
+        Title="Lease Import" Height="780" Width="1300"
+        MinHeight="650" MinWidth="1050">
+    <Window.Resources>
+        <local:EnumToBooleanConverter x:Key="EnumToBoolean" />
+        <Style TargetType="RadioButton">
+            <Setter Property="Margin" Value="0,4,16,4" />
+        </Style>
+    </Window.Resources>
+    <Window.DataContext>
+        <local:MainViewModel />
+    </Window.DataContext>
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <DockPanel Grid.Row="0" Margin="0,0,0,10">
+            <Button Content="Browse CSV…" Command="{Binding BrowseCommand}"
+                    DockPanel.Dock="Left" Padding="16,7" Margin="0,0,12,0" />
+            <Button x:Name="ExportButton" Content="Export JSON…" Command="{Binding ExportCommand}"
+                    DockPanel.Dock="Left" Padding="16,7" Margin="0,0,12,0" />
+            <Button x:Name="CalculateButton" Content="Calculate" Command="{Binding CalculateCommand}"
+                    DockPanel.Dock="Left" Padding="16,7" Margin="0,0,12,0" />
+            <TextBlock Text="{Binding SelectedFilePath}" VerticalAlignment="Center"
+                       TextTrimming="CharacterEllipsis" ToolTip="{Binding SelectedFilePath}" />
+        </DockPanel>
+
+        <Grid Grid.Row="1" Margin="0,0,0,12">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*" />
+                <ColumnDefinition Width="3*" />
+                <ColumnDefinition Width="2*" />
+            </Grid.ColumnDefinitions>
+            <GroupBox Header="Framework" Margin="0,0,12,0" IsEnabled="{Binding CanEditAnswers}">
+                <WrapPanel Margin="10,4">
+                    <RadioButton x:Name="IfrsRadio" Content="IFRS" GroupName="Framework"
+                                 IsChecked="{Binding SelectedFramework, Mode=TwoWay, Converter={StaticResource EnumToBoolean}, ConverterParameter={x:Static models:Framework.IFRS}}" />
+                    <RadioButton x:Name="LocalGaapRadio" Content="LocalGAAP" GroupName="Framework"
+                                 IsChecked="{Binding SelectedFramework, Mode=TwoWay, Converter={StaticResource EnumToBoolean}, ConverterParameter={x:Static models:Framework.LocalGAAP}}" />
+                </WrapPanel>
+            </GroupBox>
+            <GroupBox Grid.Column="1" Header="Entity size" Margin="0,0,12,0" IsEnabled="{Binding CanEditAnswers}">
+                <WrapPanel Margin="10,4">
+                    <RadioButton Content="Micro" GroupName="EntitySize"
+                                 IsChecked="{Binding SelectedEntitySize, Mode=TwoWay, Converter={StaticResource EnumToBoolean}, ConverterParameter={x:Static models:EntitySize.Micro}}" />
+                    <RadioButton Content="Small" GroupName="EntitySize"
+                                 IsChecked="{Binding SelectedEntitySize, Mode=TwoWay, Converter={StaticResource EnumToBoolean}, ConverterParameter={x:Static models:EntitySize.Small}}" />
+                    <RadioButton x:Name="MediumRadio" Content="Medium" GroupName="EntitySize"
+                                 IsChecked="{Binding SelectedEntitySize, Mode=TwoWay, Converter={StaticResource EnumToBoolean}, ConverterParameter={x:Static models:EntitySize.Medium}}" />
+                    <RadioButton x:Name="LargeRadio" Content="Large" GroupName="EntitySize"
+                                 IsChecked="{Binding SelectedEntitySize, Mode=TwoWay, Converter={StaticResource EnumToBoolean}, ConverterParameter={x:Static models:EntitySize.Large}}" />
+                </WrapPanel>
+            </GroupBox>
+            <GroupBox Grid.Column="2" Header="Has subleases">
+                <StackPanel Margin="10,4">
+                    <WrapPanel IsEnabled="{Binding CanAnswerSubleases}">
+                        <RadioButton x:Name="SubleasesYesRadio" Content="Yes" GroupName="HasSubleases"
+                                     IsChecked="{Binding SelectedHasSubleases, Mode=TwoWay, Converter={StaticResource EnumToBoolean}, ConverterParameter={x:Static models:HasSubleases.Yes}}" />
+                        <RadioButton x:Name="SubleasesNoRadio" Content="No" GroupName="HasSubleases"
+                                     IsChecked="{Binding SelectedHasSubleases, Mode=TwoWay, Converter={StaticResource EnumToBoolean}, ConverterParameter={x:Static models:HasSubleases.No}}" />
+                    </WrapPanel>
+                    <TextBlock Text="Skipped when there are no leases." FontSize="11" TextWrapping="Wrap" />
+                </StackPanel>
+            </GroupBox>
+        </Grid>
+
+        <TextBlock Grid.Row="2" Text="{Binding StatusMessage}" TextWrapping="Wrap" Margin="0,0,0,14"
+                   AutomationProperties.LiveSetting="Polite" />
+        <Grid Grid.Row="3">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="320" />
+            </Grid.ColumnDefinitions>
+            <Grid Margin="0,0,16,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="3*" MinHeight="100" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="2*" MinHeight="100" />
+                </Grid.RowDefinitions>
+                <TextBlock Grid.Row="0" Text="Leases" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,6" />
+                <DataGrid x:Name="LeaseGrid" Grid.Row="1" ItemsSource="{Binding ImportResult.Leases}" IsReadOnly="True"
+                          AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False"
+                          HeadersVisibility="Column" EnableRowVirtualization="True">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Lease ID" Binding="{Binding LeaseId}" Width="100" />
+                        <DataGridTextColumn Header="Asset class" Binding="{Binding AssetClass}" Width="110" />
+                        <DataGridTextColumn Header="Description" Binding="{Binding Description}" Width="*" MinWidth="150" />
+                        <DataGridTextColumn Header="Currency" Binding="{Binding Currency}" Width="75" />
+                        <DataGridTextColumn Header="Opening" Binding="{Binding Opening}" Width="120" />
+                        <DataGridTextColumn Header="Additions" Binding="{Binding Additions}" Width="100" />
+                        <DataGridTextColumn Header="Depreciation" Binding="{Binding Depreciation}" Width="110" />
+                        <DataGridTextColumn Header="Disposals" Binding="{Binding Disposals}" Width="100" />
+                    </DataGrid.Columns>
+                </DataGrid>
+        
+                <TextBlock Grid.Row="2" Text="Import issues" FontSize="16" FontWeight="SemiBold" Margin="0,16,0,6" />
+                <DataGrid x:Name="IssueGrid" Grid.Row="3" ItemsSource="{Binding ImportResult.Issues}" IsReadOnly="True"
+                          AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False"
+                          HeadersVisibility="Column" EnableRowVirtualization="True">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Line" Binding="{Binding LineNumber}" Width="65" />
+                        <DataGridTextColumn Header="Field" Binding="{Binding Field}" Width="130" />
+                        <DataGridTextColumn Header="Message" Binding="{Binding Message}" Width="*" MinWidth="250">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="TextWrapping" Value="Wrap" />
+                                    <Setter Property="Margin" Value="3" />
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Grid>
+            <GroupBox Grid.Column="1" Header="Calculation results">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="12">
+                        <TextBlock Text="Select Calculate after importing a CSV." TextWrapping="Wrap" Margin="0,0,0,12">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding CalculationResult}" Value="{x:Null}">
+                                            <Setter Property="Visibility" Value="Visible" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                        <Grid>
+                            <Grid.Style>
+                                <Style TargetType="Grid">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding CalculationResult}" Value="{x:Null}">
+                                            <Setter Property="Visibility" Value="Collapsed" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Grid.Style>
+                            <Grid.Resources>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Margin" Value="0,5,8,5" />
+                                    <Setter Property="TextWrapping" Value="Wrap" />
+                                </Style>
+                            </Grid.Resources>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="120" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" /><RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" /><RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" /><RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" /><RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" /><RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <TextBlock Text="Lease count" />
+                            <TextBlock x:Name="LeaseCountResult" Grid.Column="1" Text="{Binding CalculationResult.LeaseCount}" />
+                            <TextBlock Grid.Row="1" Text="Has leases" />
+                            <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding CalculationResult.HasLeases}" />
+                            <TextBlock Grid.Row="2" Text="Mixed currency" />
+                            <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding CalculationResult.MixedCurrency}" />
+                            <TextBlock Grid.Row="3" Text="Summary required" />
+                            <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding CalculationResult.SummaryRequired, TargetNullValue='Not available'}" />
+                            <TextBlock Grid.Row="4" Text="Total closing" />
+                            <TextBlock x:Name="TotalClosingResult" Grid.Row="4" Grid.Column="1" Text="{Binding CalculationResult.TotalClosing, StringFormat={}{0:N2}, TargetNullValue='Not available'}" />
+                            <TextBlock Grid.Row="5" Text="Average closing" />
+                            <TextBlock Grid.Row="5" Grid.Column="1" Text="{Binding CalculationResult.AverageClosing, StringFormat={}{0:N2}, TargetNullValue='Not available'}" />
+                            <TextBlock Grid.Row="6" Text="Show ROU disclosure" />
+                            <TextBlock Grid.Row="6" Grid.Column="1" Text="{Binding CalculationResult.ShowRouDisclosure}" />
+                            <TextBlock Grid.Row="7" Text="Show maturity analysis" />
+                            <TextBlock Grid.Row="7" Grid.Column="1" Text="{Binding CalculationResult.ShowMaturityAnalysis}" />
+                            <TextBlock Grid.Row="8" Text="Show sublease disclosure" />
+                            <TextBlock Grid.Row="8" Grid.Column="1" Text="{Binding CalculationResult.ShowSubleaseDisclosure}" />
+                            <TextBlock Grid.Row="9" Text="Show cash outflow" />
+                            <TextBlock Grid.Row="9" Grid.Column="1" Text="{Binding CalculationResult.ShowCashOutflow, TargetNullValue='Not available'}" />
+                        </Grid>
+                    </StackPanel>
+                </ScrollViewer>
+            </GroupBox>
+        </Grid>
+    </Grid>
+</Window>

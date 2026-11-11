@@ -1,0 +1,10 @@
+<Solution>
+  <Folder Name="/Jscript/">
+    <File Path="JScript/LeaseCalculator.js" />
+    <File Path="JScript/LeaseCalculatorTests.js" />
+    <File Path="TestRunner.js" />
+  </Folder>
+  <Project Path="../LeaseImport.Core/LeaseImport.Core.csproj" />
+  <Project Path="LeaseImport.Tests/LeaseImport.Tests.csproj" />
+  <Project Path="LeaseImport.WPF/LeaseImport.WPF.csproj" />
+</Solution>
